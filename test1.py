@@ -51,38 +51,64 @@ def twod_euclid_distance(point1, point2):
     y2 = point2[1]
     return ((x2-x1)**2+(y2-y1)**2)**(1/2)
 
-def feed(feeding_order):
+def feed(feeding_order): #hoc
+    route = []
     TD = 0
     drone_coords = [drone_depot[0],drone_depot[1]] # intitial drone coords
+    route.append(drone_coords)
 
     __init__distance = zoo_dimentions[2]-drone_depot[2] # drone flying up to zoo height from the depot
     TD += __init__distance 
-    #get current food storage
-    for coords in food_storage_coordinates:
-        if feeding_order[0] in coords:
-            current_food_storage =  list(coords)[:-2]
+    for diet in feeding_order:
+        #get current food storage
+        for coords in food_storage_coordinates:
+            if feeding_order[0] in coords:
+                current_food_storage =  list(coords)[:-1]
 
-    #travel to food storage
-    TD += twod_euclid_distance(drone_coords, current_food_storage)
-    drone_coords = current_food_storage
+        #travel to food storage
+        TD += twod_euclid_distance(drone_coords, current_food_storage)
+        drone_coords = current_food_storage[:-1]
+        route.append(drone_coords)
+        #pick up food storage
+        TD += 2*(zoo_dimentions[2]-current_food_storage[2]) # moving down and back up
 
-    enclosures_to_feed = [enclosure for enclosure in enclosures if (feeding_order[0] in enclosure)]
-    #distances to next various enclosures
-    def dist(drone_coord, enclosure):
-        return twod_euclid_distance(drone_coords, (enclosure[0], enclosure[1]))
+        enclosures_to_feed = [enclosure for enclosure in enclosures if (feeding_order[0] in enclosure)]
+        #distances to next various enclosures
+        def dist(drone_coord, enclosure):
+            return twod_euclid_distance(drone_coord, (enclosure[0], enclosure[1]))
 
-    distances = [dist(drone_coords,enclosure) for enclosure in enclosures_to_feed]
-    print(distances)
-    return TD
+        #feed every animal of that type
+        while len(enclosures_to_feed)> 0:
+            distances = [dist(drone_coords,enclosure) for enclosure in enclosures_to_feed]
+        
+            closest_enclosure = enclosures_to_feed[distances.index(min(distances))]
 
-feed('hoc')
+            #travel to enclosure
+            TD += twod_euclid_distance(drone_coords, closest_enclosure[:2])
+            drone_coords = closest_enclosure[:2]
+            route.append(drone_coords)
+            #feed animal
+            TD += 2*(zoo_dimentions[2]-closest_enclosure[2]) # moving down and back up
+            enclosures_to_feed.remove(closest_enclosure)
+
+
+    #
+    summedPrioH = 0.0
+    summedPrioC = 0.0
+    summedPrioO = 0.0
+    for i in range(len(enclosures) - 1): #sums up the priority, grouped by diet (h,c,o)
+        if enclosures[i][4] == "h":
+            summedPrioH += float(enclosures[i][3]) *1000
+        elif enclosures[i][4] == "c":
+            summedPrioC += float(enclosures[i][3]) *1000
+        else:
+            summedPrioO += float(enclosures[i][3]) *1000 
+    priority_sum = summedPrioH + summedPrioO + summedPrioC  
+    return route, priority_sum - TD
+
 
 def shortest_distance():
-    #Feed(HCO)
-    #Feed(HOC)
-    #Feed(OCH)
-    #Feed(OHC)
-    #Feed(COH)
-    #Feed(CHO)
-    #pick best one
-    return None
+    scores = [feed('hco'), feed('hoc'), feed('och'), feed('ohc'), feed('coh'), feed('cho')]
+    scores[scores.index(min(scores))]
+
+print(shortest_distance())
