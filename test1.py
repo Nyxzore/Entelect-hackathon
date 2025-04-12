@@ -55,7 +55,7 @@ def feed(feeding_order): #hoc
     route = []
     TD = 0
     drone_coords = [drone_depot[0],drone_depot[1]] # intitial drone coords
-    route.append(drone_coords)
+    route.append(tuple(drone_coords))
 
     __init__distance = zoo_dimentions[2]-drone_depot[2] # drone flying up to zoo height from the depot
     TD += __init__distance 
@@ -108,7 +108,16 @@ def feed(feeding_order): #hoc
 
 
 def shortest_distance():
-    scores = [feed('hco'), feed('hoc'), feed('och'), feed('ohc'), feed('coh'), feed('cho')]
-    scores[scores.index(min(scores))]
+    routes = ['hco', 'hoc', 'och', 'ohc', 'coh', 'cho']
+    min_score = None
+    min_route = None
+
+    for route in routes:
+        score = feed(route)
+        if min_score is None or score < min_score:
+            min_score = score
+            min_route = route
+
+    return min_route, min_score
 
 print(shortest_distance())
