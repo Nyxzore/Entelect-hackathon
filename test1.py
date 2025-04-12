@@ -62,17 +62,17 @@ def feed(feeding_order): #hoc
     for diet in feeding_order:
         #get current food storage
         for coords in food_storage_coordinates:
-            if feeding_order[0] in coords:
+            if diet in coords:
                 current_food_storage =  list(coords)[:-1]
 
         #travel to food storage
         TD += twod_euclid_distance(drone_coords, current_food_storage)
         drone_coords = current_food_storage[:-1]
-        route.append(drone_coords)
+        route.append(tuple(drone_coords))
         #pick up food storage
         TD += 2*(zoo_dimentions[2]-current_food_storage[2]) # moving down and back up
 
-        enclosures_to_feed = [enclosure for enclosure in enclosures if (feeding_order[0] in enclosure)]
+        enclosures_to_feed = [enclosure for enclosure in enclosures if (diet in enclosure)]
         #distances to next various enclosures
         def dist(drone_coord, enclosure):
             return twod_euclid_distance(drone_coord, (enclosure[0], enclosure[1]))
@@ -91,13 +91,13 @@ def feed(feeding_order): #hoc
             TD += 2*(zoo_dimentions[2]-closest_enclosure[2]) # moving down and back up
             enclosures_to_feed.remove(closest_enclosure)
 
-        #move back to origin
-        #travel to food storage
-        TD += twod_euclid_distance(drone_coords, drone_depot)
-        drone_coords = drone_depot[:-1]
-        route.append(drone_coords)
-        #pick up food storage
-        TD += zoo_dimentions[2]-drone_depot[2] # moving down and back up
+    #move back to origin
+    #travel to food storage
+    TD += twod_euclid_distance(drone_coords, drone_depot)
+    drone_coords = drone_depot[:-1]
+    route.append(drone_coords)
+    #pick up food storage
+    TD += zoo_dimentions[2]-drone_depot[2] # moving down and back up
 
 
     #
@@ -129,5 +129,5 @@ def shortest_distance():
     return min_score[0]
 
 f = open("Level_1.txt", "a")
-f.write(str(shortest_distance()))
+f.write(str([shortest_distance()]))
 f.close()
