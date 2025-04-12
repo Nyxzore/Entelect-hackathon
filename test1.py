@@ -118,6 +118,6 @@ def shortest_distance():
             min_score = score
             min_route = route
 
-    return min_route, min_score
+    return min_score[0]
 
 print(shortest_distance())
