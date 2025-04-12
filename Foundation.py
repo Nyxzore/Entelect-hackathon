@@ -17,6 +17,7 @@ droneDepot = replaceBrack(line).split(",")
 line = (file1.readline())
 batteryCap = replaceBrack(line)
 
+# splits all of the lists, creates list of lists
 def getPositions(line):
     delim = line.find("),(")
     foodStorages = list()
@@ -35,5 +36,10 @@ print(getPositions(line))
 line = file1.readline()
 while line.find("]") == -1:
     line = file1.readline()
+# pi - priority | TD - total distance traveled
+def score(pi, TD):
+    weighted_sum = 0
+    for priority_multiplier in pi:
+        weighted_sum += priority_multiplier * 1000
+    return weighted_sum  - TD
 
-print(getPositions(line))
