@@ -24,9 +24,9 @@ def getPositions(line):
     foodStorages = list()
     while delim != -1:
         foodStorages.append(replaceBrack(line[0:delim]).split(","))
-        line = line[delim + 2: len(line)- 1]
+        line = line[delim + 2: len(line)]
         delim = line.find("),(")
-
+    line = line[delim + 2: len(line)]    
     delim = line.find("]")
     foodStorages.append(replaceBrack(line[0:delim]).split(","))
     return foodStorages
@@ -40,8 +40,6 @@ while line.find("]") == -1:
 line = line + file1.readline()
 animalEnclosures = getPositions(line)
 
-print(foodStorages, animalEnclosures)
-
 # pi - priority | TD - total distance traveled
 def score(pi, TD):
     weighted_sum = 0
@@ -54,11 +52,8 @@ summedPrioC = 0.0
 summedPrioO = 0.0
 for i in range(len(animalEnclosures) - 1): #sums up the priority, grouped by diet (h,c,o)
     if animalEnclosures[i][4] == "h":
-        summedPrioH += float(animalEnclosures[i][3])
+        summedPrioH += float(animalEnclosures[i][3]) * 1000
     elif animalEnclosures[i][4] == "c":
-        summedPrioC += float(animalEnclosures[i][3])
+        summedPrioC += float(animalEnclosures[i][3]) * 1000
     else:
-        summedPrioO += float(animalEnclosures[i][3])
-print(summedPrioH)
-print(summedPrioC)
-print(summedPrioO)
+        summedPrioO += float(animalEnclosures[i][3]) * 1000
