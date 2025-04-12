@@ -91,6 +91,14 @@ def feed(feeding_order): #hoc
             TD += 2*(zoo_dimentions[2]-closest_enclosure[2]) # moving down and back up
             enclosures_to_feed.remove(closest_enclosure)
 
+        #move back to origin
+        #travel to food storage
+        TD += twod_euclid_distance(drone_coords, drone_depot)
+        drone_coords = drone_depot[:-1]
+        route.append(drone_coords)
+        #pick up food storage
+        TD += zoo_dimentions[2]-drone_depot[2] # moving down and back up
+
 
     #
     summedPrioH = 0.0
@@ -120,4 +128,6 @@ def shortest_distance():
 
     return min_score[0]
 
-print(shortest_distance())
+f = open("Level_1.txt", "a")
+f.write(str(shortest_distance()))
+f.close()
